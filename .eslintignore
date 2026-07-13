@@ -1,0 +1,5 @@
+# Ignore project files for ESLint (disables project linting)
+src/
+test/
+apps/
+libs/
