@@ -1,5 +1,4 @@
 import { forwardRef, Inject, Injectable, Logger } from "@nestjs/common";
-import { GetUserDTO } from "src/dtos/users/users.dto";
 import { AuthService } from "src/modules/auth/providers/auth.service";
 
 @Injectable()
