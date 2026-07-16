@@ -20,6 +20,7 @@ import {
 import { Request } from 'express';
 import { CreateUserDto, GetUserDTO, PatchUserDTO } from 'src/dtos/users/users.dto';
 import { UserService } from './providers/users.service';
+import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 
 @Controller('users')
 export class UsersController {
@@ -30,6 +31,27 @@ export class UsersController {
     private logger = new Logger(UsersController.name);
 
     @Get()
+    @ApiQuery({
+        name: "page",
+        type: "number",
+        required: false,
+        description:"page number",
+        example:1
+    })
+    @ApiQuery({
+        name: "limit",
+        type: "number",
+        required: false,
+        description:"number of entries returned per query",
+        example:10
+    })
+    @ApiOperation({
+        summary:"Fetches the list of users"
+    })
+    @ApiResponse({
+        status:200,
+        description:"Users fetched successfully"
+    })
     public async getAllUsers(
         @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
         @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number

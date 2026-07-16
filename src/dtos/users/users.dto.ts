@@ -1,6 +1,7 @@
 import { IsEmail, IsNotEmpty, IsNumber, IsPositive, IsString, Matches, MaxLength, MinLength } from 'class-validator'
 import { Type } from 'class-transformer';
 import { PartialType } from '@nestjs/mapped-types'
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 PartialType
 export class CreateUserDto {
@@ -22,6 +23,11 @@ export class CreateUserDto {
 }
 
 export class GetUserDTO {
+    // @ApiPropertyOptional()
+    @ApiProperty({
+        description:"Get User with a specific Id",
+        example:1234,
+    })
     @IsNumber()
     @IsNotEmpty()
     @IsPositive()
@@ -29,4 +35,4 @@ export class GetUserDTO {
     id!: number
 }
 
-export class PatchUserDTO extends PartialType(CreateUserDto){}
+export class PatchUserDTO extends PartialType(CreateUserDto) { }
