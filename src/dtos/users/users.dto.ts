@@ -35,4 +35,4 @@ export class GetUserDTO {
     id!: number
 }
 
-export class PatchUserDTO extends PartialType(CreateUserDto) { }
+export class PatchUserDto extends PartialType(CreateUserDto) { }

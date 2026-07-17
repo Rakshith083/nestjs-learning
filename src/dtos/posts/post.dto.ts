@@ -1,8 +1,9 @@
-import { IsArray, IsEnum, IsISO8601, IsJSON, IsNotEmpty, IsNumber, IsOptional, isString, IsString, IsUrl, Matches, MaxLength, MinLength, ValidateNested } from "class-validator";
+import { IsArray, IsEnum, IsISO8601, IsJSON, IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl, Matches, MaxLength, MinLength, ValidateNested } from "class-validator";
 import { postType } from "./enums/postType.enum";
 import { postStatus } from "./enums/postStatus.enum";
 import { Type } from "class-transformer";
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional, PartialType } from "@nestjs/swagger";
+// import { PartialType } from "@nestjs/mapped-types";
 
 
 export class CreatePostMetaOptionsDto {
@@ -27,7 +28,7 @@ export class CreatePostDto {
     })
     title!: string
 
-    @IsEnum(postType, { message: "Invalid enum" })
+    @IsEnum(postType, { message: `posttype must be one of the following value: ${Object.values(postType)}` })
     @IsNotEmpty()
     @ApiProperty({
         enum: postType,
@@ -46,7 +47,7 @@ export class CreatePostDto {
     })
     slug!: string
 
-    @IsEnum(postStatus, { message: "Invalid enum" })
+    @IsEnum(postStatus, { message: `posttype must be one of the following value: ${Object.values(postStatus)}` })
     @IsNotEmpty()
     @ApiProperty({
         enum: postStatus,
@@ -96,10 +97,6 @@ export class CreatePostDto {
     })
     tags?: string[]
 
-    @IsOptional()
-    @IsArray()
-    @ValidateNested({ each: true })
-    @Type(() => CreatePostMetaOptionsDto)
     @ApiPropertyOptional(
         {
             type: 'array',
@@ -121,6 +118,19 @@ export class CreatePostDto {
             }
         }
     )
+    @IsOptional()
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => CreatePostMetaOptionsDto)
     metaOptions?: CreatePostMetaOptionsDto[]
 
+}
+
+
+export class PatchPostDto extends PartialType(CreatePostDto) {
+
+    @IsNumber()
+    @IsNotEmpty()
+    @ApiProperty({ description: "Id of the post that needs update" })
+    id!: number
 }

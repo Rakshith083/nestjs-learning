@@ -18,7 +18,7 @@ import {
 } from '@nestjs/common';
 // import type { CreateUser } from 'src/types/users/users-crud';
 import { Request } from 'express';
-import { CreateUserDto, GetUserDTO, PatchUserDTO } from 'src/dtos/users/users.dto';
+import { CreateUserDto, GetUserDTO, PatchUserDto } from 'src/dtos/users/users.dto';
 import { UserService } from './providers/users.service';
 import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 
@@ -88,7 +88,7 @@ export class UsersController {
     @Patch(':id')
     public patchUser(
         @Param('id', ParseIntPipe) id: number,
-        @Body() request: PatchUserDTO
+        @Body() request: PatchUserDto
     ): string {
         this.logger.log(request)
         return 'This action patches a user';
