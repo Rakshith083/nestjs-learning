@@ -35,22 +35,22 @@ export class UsersController {
         name: "page",
         type: "number",
         required: false,
-        description:"page number",
-        example:1
+        description: "page number",
+        example: 1
     })
     @ApiQuery({
         name: "limit",
         type: "number",
         required: false,
-        description:"number of entries returned per query",
-        example:10
+        description: "number of entries returned per query",
+        example: 10
     })
     @ApiOperation({
-        summary:"Fetches the list of users"
+        summary: "Fetches the list of users"
     })
     @ApiResponse({
-        status:200,
-        description:"Users fetched successfully"
+        status: 200,
+        description: "Users fetched successfully"
     })
     public async getAllUsers(
         @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
@@ -69,10 +69,7 @@ export class UsersController {
     public createUser(
         @Body() body: CreateUserDto
     ) {
-        this.logger.log(typeof body);
-        this.logger.log(body instanceof CreateUserDto);
-
-        return body;
+        return this.userService.createUser(body)
     }
 
     @Put(':id')

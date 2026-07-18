@@ -19,7 +19,7 @@ export class CreatePostMetaOptionsDto {
 
 export class CreatePostDto {
     @IsString()
-    @MaxLength(50)
+    @MaxLength(65)
     @MinLength(3)
     @ApiProperty({
         type: String,
@@ -38,6 +38,7 @@ export class CreatePostDto {
 
     @IsString()
     @IsNotEmpty()
+    @MaxLength(256)
     @Matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, {
         message: "A slug should be all small letters and use only '-' and without space. ex: 'my-url'"
     })
@@ -73,6 +74,7 @@ export class CreatePostDto {
 
     @IsUrl()
     @IsOptional()
+    @MaxLength(1024)
     @ApiPropertyOptional({
         description: "link of the featured image",
         example: "https://www.w3schools.com/html/html_images.asp"
