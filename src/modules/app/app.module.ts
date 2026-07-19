@@ -28,8 +28,7 @@ import { MetaOptionsModule } from '../meta-options/meta-options.module';
       inject: [],
       useFactory: (() => ({
         type: "postgres",
-        // scan for any files named *.entity.ts or *.entity.js under src/modules
-        entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+        autoLoadEntities: true,
         synchronize: true,
         poolSize: 20,
         port: Number(process.env.DB_PORT),

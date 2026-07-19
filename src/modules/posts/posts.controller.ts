@@ -31,9 +31,8 @@ export class PostController {
         status: 201,
         description: "You get 201 status code if the post created successfully"
     })
-    public createPost(@Body() body: CreatePostDto): any {
-        this.logger.log(body);
-        return "Create Post"
+    public createPost(@Body() body: CreatePostDto) {
+        return this.postService.createPost(body);
     }
 
     @ApiOperation({
