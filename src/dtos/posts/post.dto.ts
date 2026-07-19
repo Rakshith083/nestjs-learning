@@ -2,19 +2,11 @@ import { IsArray, IsEnum, IsISO8601, IsJSON, IsNotEmpty, IsNumber, IsOptional, I
 import { postType } from "./enums/postType.enum";
 import { postStatus } from "./enums/postStatus.enum";
 import { Type } from "class-transformer";
-import { ApiProperty, ApiPropertyOptional, PartialType } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional, } from "@nestjs/swagger";
+import { CreatePostMetaOptionsDto } from "./create-post-meta-options.dto";
 // import { PartialType } from "@nestjs/mapped-types";
 
 
-export class CreatePostMetaOptionsDto {
-    @IsString()
-    @MinLength(3)
-    @IsNotEmpty()
-    key!: string
-
-    @IsNotEmpty()
-    value!: any
-}
 
 
 export class CreatePostDto {
@@ -128,11 +120,3 @@ export class CreatePostDto {
 
 }
 
-
-export class PatchPostDto extends PartialType(CreatePostDto) {
-
-    @IsNumber()
-    @IsNotEmpty()
-    @ApiProperty({ description: "Id of the post that needs update" })
-    id!: number
-}

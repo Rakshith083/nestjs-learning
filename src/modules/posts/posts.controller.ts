@@ -1,7 +1,9 @@
 import { Body, Controller, Get, Logger, Param, ParseIntPipe, Patch, Post } from "@nestjs/common";
 import { PostsService } from "./providers/posts.service";
-import { CreatePostDto, PatchPostDto } from "src/dtos/posts/post.dto";
+import { CreatePostDto } from "src/dtos/posts/post.dto";
+
 import { ApiOperation, ApiResponse } from "@nestjs/swagger";
+import { PatchPostDto } from "src/dtos/posts/patch-post-dto";
 
 @Controller('posts')
 export class PostController {

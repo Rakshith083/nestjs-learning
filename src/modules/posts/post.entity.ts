@@ -1,6 +1,6 @@
+import { CreatePostMetaOptionsDto } from "src/dtos/posts/create-post-meta-options.dto";
 import { postStatus } from "src/dtos/posts/enums/postStatus.enum";
 import { postType } from "src/dtos/posts/enums/postType.enum";
-import { CreatePostMetaOptionsDto } from "src/dtos/posts/post.dto";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 
