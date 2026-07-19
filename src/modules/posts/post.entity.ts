@@ -1,4 +1,4 @@
-import { CreatePostMetaOptionsDto } from "src/dtos/posts/create-post-meta-options.dto";
+import { CreatePostMetaOptionsDto } from "src/modules/meta-options/dtos/create-post-meta-options.dto";
 import { postStatus } from "src/dtos/posts/enums/postStatus.enum";
 import { postType } from "src/dtos/posts/enums/postType.enum";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
@@ -56,7 +56,7 @@ export class Post {
     @Column({
         nullable: true,
         type: 'varchar',
-        length:1024
+        length: 1024
 
     })
     featuredImageUrl?: string;

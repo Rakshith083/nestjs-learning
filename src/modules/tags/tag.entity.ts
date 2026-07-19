@@ -20,7 +20,7 @@ export class Tag {
         type: 'varchar',
         nullable: false,
         unique: true,
-        length: 512
+        length: 256
     })
     slug: string;
 
@@ -41,7 +41,7 @@ export class Tag {
         nullable: true,
         length: 1024
     })
-    featuredImageUrl: string
+    featuredImageUrl?: string
 
     @CreateDateColumn()
     createDate: Date;
