@@ -14,13 +14,13 @@ export class PostController {
     private logger = new Logger(PostController.name)
 
     @Get()
-    public getPosts() {
-
+    public async getPosts() {
+        return await this.postService.findAllPosts();
     }
 
     @Get('/:userId')
-    public getUserPosts(@Param('userId', ParseIntPipe) userId: number) {
-        return this.postService.findUserPosts(userId);
+    public async getUserPosts(@Param('userId', ParseIntPipe) userId: number) {
+        // return await this.postService.findAllPosts(userId);
     }
 
     @Post()
