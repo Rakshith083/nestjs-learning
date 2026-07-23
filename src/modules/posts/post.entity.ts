@@ -90,6 +90,7 @@ export class Post {
 
     @ManyToMany(
         () => Tag,
+        (tag)=>tag.posts,
         {
             eager: true
         })

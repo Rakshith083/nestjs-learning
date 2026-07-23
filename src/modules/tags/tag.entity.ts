@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToMany, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Post } from "../posts/post.entity";
 
 
 @Entity()
@@ -51,4 +52,7 @@ export class Tag {
 
     @DeleteDateColumn()
     deleteDate: Date;
+
+    @ManyToMany(()=>Post,(post)=>post.tags)
+    posts:Post[]
 }
