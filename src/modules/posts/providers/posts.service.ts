@@ -22,7 +22,10 @@ export class PostsService {
     private logger = new Logger(PostsService.name);
     public async findAllPosts() {
         const posts = await this.postsRepo.find({
-            // relations: { "metaOptions": true }
+            relations: {
+                // metaOptions: true,
+                // author: true
+            }
         });
         return posts;
     }
