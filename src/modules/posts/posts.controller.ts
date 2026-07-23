@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Logger, Param, ParseIntPipe, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Logger, Param, ParseIntPipe, Patch, Post, Query } from "@nestjs/common";
 import { PostsService } from "./providers/posts.service";
 import { CreatePostDto } from "src/dtos/posts/post.dto";
 
@@ -46,5 +46,11 @@ export class PostController {
     public updatePOst(@Body() body: PatchPostDto) {
         this.logger.log(body);
         return "Post updated"
+    }
+
+
+    @Delete()
+    public async deletePost(@Query('id', ParseIntPipe) id: number) { 
+        return await this.postService.deletePost(id)
     }
 }
