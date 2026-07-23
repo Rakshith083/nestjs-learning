@@ -5,6 +5,8 @@ import { Repository } from 'typeorm';
 import { Post } from '../post.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MetaOptions } from 'src/modules/meta-options/meta-option.entity';
+import { TagsService } from 'src/modules/tags/providers/tags.service';
+import { PatchPostDto } from 'src/dtos/posts/patch-post-dto';
 
 
 @Injectable()
@@ -16,7 +18,8 @@ export class PostsService {
         @InjectRepository(MetaOptions)
         private readonly metaOptionsRepo: Repository<MetaOptions>,
 
-        private readonly userService: UserService
+        private readonly userService: UserService,
+        private readonly tagsService: TagsService
     ) { }
 
     private logger = new Logger(PostsService.name);
@@ -25,6 +28,7 @@ export class PostsService {
             relations: {
                 // metaOptions: true,
                 // author: true
+                // tags: true
             }
         });
         return posts;
@@ -35,9 +39,11 @@ export class PostsService {
         if (!author) {
             throw new Error('Author not found')
         }
+        const tags = await this.tagsService.findTagsByIds(body.tags ?? [])
         let post = this.postsRepo.create({
             ...body,
-            author: author
+            author: author,
+            tags: tags
         });
         return await this.postsRepo.save(post)
     }
@@ -45,5 +51,25 @@ export class PostsService {
     public async deletePost(id: number) {
         await this.postsRepo.delete(id)
         return { deleted: true, id }
+    }
+
+    public async updatePost(body: PatchPostDto) {
+        const tags_data = await this.tagsService.findTagsByIds(body.tags ?? []);
+
+        const post = await this.postsRepo.findOneBy({ id: body.id })
+        if (!post) {
+            throw new Error('Post not found');
+        }
+        post.title = body.title ?? post.title;
+        post.status = body.status ?? post.status;
+        post.content = body.content ?? post.content;
+        post.postType = body.postType ?? post.postType;
+        post.slug = body.slug ?? post.slug;
+        post.featuredImageUrl = body.featuredImageUrl ?? post.featuredImageUrl;
+        post.publishedOn = body.publishedOn ?? post.publishedOn;
+
+        post.tags = tags_data;
+        return await this.postsRepo.save(post);
+
     }
 }

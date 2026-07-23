@@ -42,10 +42,10 @@ export class PostController {
         status: 200,
         description: "200 response code on successfully updating"
     })
+    
     @Patch()
     public updatePOst(@Body() body: PatchPostDto) {
-        this.logger.log(body);
-        return "Post updated"
+        return this.postService.updatePost(body)
     }
 
 
