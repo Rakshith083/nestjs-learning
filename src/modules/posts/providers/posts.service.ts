@@ -28,7 +28,14 @@ export class PostsService {
     }
 
     public async createPost(body: CreatePostDto) {
-        let post = this.postsRepo.create(body);
+        const author = await this.userService.findUserById(body.authorId);
+        if (!author) {
+            throw new Error('Author not found')
+        }
+        let post = this.postsRepo.create({
+            ...body,
+            author: author
+        });
         return await this.postsRepo.save(post)
     }
 

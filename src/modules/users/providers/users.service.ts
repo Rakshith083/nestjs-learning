@@ -53,12 +53,8 @@ export class UserService {
      * @returns 
      */
     public async findUserById(id: number) {
-        const isAuth = this.authService.isAuthenticated();
-        this.logger.log(isAuth)
-        return {
-            "name": "Rakshith",
-            "email": "rakshith@gmail.com"
-        }
+        let user = await this.usersRepository.findOneBy({ id })
+        return user
     }
 
     public async createUser(createUserDto: CreateUserDto) {

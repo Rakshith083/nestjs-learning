@@ -1,7 +1,8 @@
 import { postStatus } from "src/dtos/posts/enums/postStatus.enum";
 import { postType } from "src/dtos/posts/enums/postType.enum";
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { MetaOptions } from "../meta-options/meta-option.entity";
+import { User } from "../users/user.entity";
 
 
 @Entity()
@@ -68,11 +69,23 @@ export class Post {
     })
     publishedOn?: Date;
 
-    @OneToOne(() => MetaOptions, (metaOptions) => metaOptions.post, {
-        cascade: true,
-        eager: true
-    })
+    @OneToOne(
+        () => MetaOptions,
+        (metaOptions) => metaOptions.post,
+        {
+            cascade: true,
+            eager: true
+        })
     metaOptions?: MetaOptions;
+
+    @ManyToOne(
+        () => User,
+        (author) => author.posts,
+        {
+            onDelete: 'CASCADE',
+            eager: true
+        })
+    author: User
 
     tags?: string[];
 }
