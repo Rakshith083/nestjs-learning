@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { MetaOptions } from 'src/modules/meta-options/meta-option.entity';
 import { TagsService } from 'src/modules/tags/providers/tags.service';
 import { PatchPostDto } from 'src/dtos/posts/patch-post-dto';
+import { ConfigService } from '@nestjs/config';
 
 
 @Injectable()
@@ -19,7 +20,8 @@ export class PostsService {
         private readonly metaOptionsRepo: Repository<MetaOptions>,
 
         private readonly userService: UserService,
-        private readonly tagsService: TagsService
+        private readonly tagsService: TagsService,
+        private readonly configService: ConfigService
     ) { }
 
     private logger = new Logger(PostsService.name);
@@ -31,6 +33,7 @@ export class PostsService {
                 // tags: true
             }
         });
+        this.logger.log("DB_HOST",this.configService.get('DB_HOST'))
         return posts;
     }
 
