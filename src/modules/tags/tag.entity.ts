@@ -53,6 +53,10 @@ export class Tag {
     @DeleteDateColumn()
     deleteDate: Date;
 
-    @ManyToMany(()=>Post,(post)=>post.tags)
-    posts:Post[]
+    @ManyToMany(
+        () => Post,
+        (post) => post.tags,
+        { onDelete: 'CASCADE' }
+    )
+    posts: Post[]
 }

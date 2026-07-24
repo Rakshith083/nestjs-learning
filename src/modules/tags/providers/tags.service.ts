@@ -20,4 +20,14 @@ export class TagsService {
         const tags_data = await this.tagsRepo.find({ where: { id: In(tags) } });
         return tags_data;
     }
+
+    public async deleteTag(id: number) {
+        const deleted = await this.tagsRepo.delete(id)
+        return { deleted }
+    }
+
+    public async softRemove(id: number) {
+        const deleted = await this.tagsRepo.softDelete(id)
+        return { deleted }
+    }
 }
