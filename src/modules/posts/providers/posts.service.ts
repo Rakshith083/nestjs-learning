@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException, RequestTimeoutException } from '@nestjs/common';
 import { CreatePostDto } from 'src/dtos/posts/post.dto';
 import { UserService } from 'src/modules/users/providers/users.service';
 import { Repository } from 'typeorm';
@@ -33,7 +33,7 @@ export class PostsService {
                 // tags: true
             }
         });
-        this.logger.log("DB_HOST",this.configService.get('DB_HOST'))
+        this.logger.log("DB_HOST", this.configService.get('DB_HOST'))
         return posts;
     }
 
@@ -57,12 +57,42 @@ export class PostsService {
     }
 
     public async updatePost(body: PatchPostDto) {
-        const tags_data = await this.tagsService.findTagsByIds(body.tags ?? []);
+        let tags_data: any, post: any;
+        try {
+            tags_data = await this.tagsService.findTagsByIds(body.tags ?? []);
 
-        const post = await this.postsRepo.findOneBy({ id: body.id })
-        if (!post) {
-            throw new Error('Post not found');
         }
+        catch (e) {
+            this.logger.error(e)
+            throw new RequestTimeoutException('Error occurred while fetching tags', {
+                description: 'Error occurred while fetching tags',
+                cause: e
+            });
+        }
+
+        if (!tags_data || tags_data.length !== (body.tags ?? []).length) {
+            throw new BadRequestException('Some tags not found', {
+                description: 'Some tags not found',
+                cause: new Error('Some tags not found')
+            });
+        }
+
+        try {
+            post = await this.postsRepo.findOneBy({ id: body.id })
+        } catch (e) {
+            this.logger.error(e)
+            throw new RequestTimeoutException('Error occurred while fetching post', {
+                description: 'Error occurred while fetching post',
+                cause: e
+            });
+        }
+        if (!post) {
+            throw new NotFoundException('Post Id Does not exist', {
+                description: 'Post Id Does not exist',
+                cause: new Error('Post Id Does not exist')
+            });
+        }
+
         post.title = body.title ?? post.title;
         post.status = body.status ?? post.status;
         post.content = body.content ?? post.content;
@@ -72,7 +102,15 @@ export class PostsService {
         post.publishedOn = body.publishedOn ?? post.publishedOn;
 
         post.tags = tags_data;
-        return await this.postsRepo.save(post);
-
+        try {
+            await this.postsRepo.save(post);
+        } catch (e) {
+            this.logger.error(e)
+            throw new RequestTimeoutException('Error occurred while updating post', {
+                description: 'Error occurred while updating post',
+                cause: e
+            });
+        }
+        return post
     }
 }

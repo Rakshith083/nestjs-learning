@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable, Logger } from "@nestjs/common";
+import { BadRequestException, forwardRef, Inject, Injectable, Logger, RequestTimeoutException, HttpException, HttpStatus } from "@nestjs/common";
 import { AuthService } from "src/modules/auth/providers/auth.service";
 import { Repository } from "typeorm";
 import { User } from "../user.entity";
@@ -29,22 +29,25 @@ export class UserService {
     private logger = new Logger(UserService.name);
 
     /**
-     * Method to fetch all users from thr database
+     * Method to fetch all users from the database
      * @param page 
      * @param limit 
      * @returns 
      */
+
+
     public async findAllUsers(page?: number, limit?: number) {
-        return [
+        throw new HttpException(
             {
-                "name": "John",
-                "email": "john@gmail.com"
+                status: HttpStatus.NOT_IMPLEMENTED,
+                error: 'Method not implemented'
             },
+            HttpStatus.NOT_IMPLEMENTED,
             {
-                "name": "Rakshith",
-                "email": "rakshith@gmail.com"
+                description: 'Method not implemented',
+                cause: new Error('Method not implemented')
             }
-        ];
+        );
     }
 
     /**
@@ -53,19 +56,61 @@ export class UserService {
      * @returns 
      */
     public async findUserById(id: number) {
-        let user = await this.usersRepository.findOneBy({ id })
-        return user
+        let user: any = null;
+        try {
+            user = await this.usersRepository.findOneBy({ id });
+        }
+        catch (ex) {
+            this.logger.error("Error occurred while fetching user", ex)
+            throw new RequestTimeoutException("Error occurred while fetching user", {
+                description: "Error occurred while fetching user",
+                cause: ex
+            });
+        }
+
+        if (!user) {
+            throw new BadRequestException("User not found", {
+                description: "User not found",
+                cause: new Error("User not found")
+            });
+        }
+        return user;
     }
 
     public async createUser(createUserDto: CreateUserDto) {
-        const user = await this.usersRepository.findOne({
-            where: { email: createUserDto.email }
-        });
-        // if (!user) {
+        let user: User | null = null;
+        try {
+            user = await this.usersRepository.findOne({
+                where: { email: createUserDto.email }
+            });
+        }
+        catch (ex) {
+            this.logger.error("Error occurred while creating user", ex)
+            throw new RequestTimeoutException("Error occurred while creating user", {
+                description: "Error occurred while creating user",
+                cause: ex
+            });
+        }
+
+        if (user) {
+            throw new BadRequestException("User already exists", {
+                description: "User already exists",
+                cause: new Error("User already exists")
+            });
+        }
         let newUser = this.usersRepository.create(createUserDto);
-        newUser = await this.usersRepository.save(newUser);
-        return newUser
-        // }
+
+        try {
+            newUser = await this.usersRepository.save(newUser);
+            return newUser
+        }
+        catch (ex) {
+            this.logger.error("Error occurred while saving user", ex)
+            throw new RequestTimeoutException("Unable to save user", {
+                description: "Error occurred while saving user",
+                cause: ex
+            });
+        }
     }
 
 }
