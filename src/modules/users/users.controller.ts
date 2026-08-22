@@ -21,6 +21,7 @@ import { Request } from 'express';
 import { CreateUserDto, GetUserDTO, PatchUserDto } from 'src/dtos/users/users.dto';
 import { UserService } from './providers/users.service';
 import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import { CreateManyUsersDto } from './dtos/create-many-users.dto';
 
 @Controller('users')
 export class UsersController {
@@ -70,6 +71,13 @@ export class UsersController {
         @Body() body: CreateUserDto
     ) {
         return this.userService.createUser(body)
+    }
+
+    @Post('createBulk')
+    public createBulkUsers(
+        @Body() body: CreateManyUsersDto
+    ) {
+        return this.userService.createMany(body)
     }
 
     @Put(':id')

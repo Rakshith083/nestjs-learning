@@ -4,6 +4,8 @@ import { Repository } from "typeorm";
 import { User } from "../user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { CreateUserDto } from "src/dtos/users/users.dto";
+import { CreateManyUsers } from "./create-many-users";
+import { CreateManyUsersDto } from "../dtos/create-many-users.dto";
 
 /**
  * Class to connect Users table and perform business operations
@@ -21,7 +23,9 @@ export class UserService {
         private readonly authService: AuthService,
 
         @InjectRepository(User)
-        private readonly usersRepository: Repository<User>
+        private readonly usersRepository: Repository<User>,
+
+        private readonly createManyUsersProvider: CreateManyUsers,
     ) { }
     /**
      * Initialize private logger object
@@ -75,6 +79,10 @@ export class UserService {
             });
         }
         return user;
+    }
+
+    public async createMany(createManyUsersDto: CreateManyUsersDto) {
+        return this.createManyUsersProvider.createMany(createManyUsersDto);
     }
 
     public async createUser(createUserDto: CreateUserDto) {
