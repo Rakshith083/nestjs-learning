@@ -5,6 +5,7 @@ import { AuthModule } from '../auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import {  CreateManyUsers as CreateManyUsersProvider } from './providers/create-many-users';
+import { PaginationModule } from '../common/pagination.module';
 
 @Module({
   controllers: [UsersController],
@@ -12,7 +13,8 @@ import {  CreateManyUsers as CreateManyUsersProvider } from './providers/create-
   exports: [UserService],
   imports: [
     forwardRef(() => AuthModule),
-    TypeOrmModule.forFeature([User])
+    TypeOrmModule.forFeature([User]),
+    PaginationModule
   ]
 })
 export class UsersModule { }

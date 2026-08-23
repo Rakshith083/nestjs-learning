@@ -9,6 +9,8 @@ import { TagsService } from 'src/modules/tags/providers/tags.service';
 import { PatchPostDto } from 'src/dtos/posts/patch-post-dto';
 import { ConfigService } from '@nestjs/config';
 import { GetPostsDTO } from '../dtos/get-posts.dto';
+import { PaginationProvider } from 'src/modules/common/pagination/providers/pagination-provider';
+import { Paginated } from 'src/modules/common/pagination/inerfaces/paginated-interface';
 
 
 @Injectable()
@@ -17,12 +19,10 @@ export class PostsService {
         @InjectRepository(Post)
         private readonly postsRepo: Repository<Post>,
 
-        @InjectRepository(MetaOptions)
-        private readonly metaOptionsRepo: Repository<MetaOptions>,
-
         private readonly userService: UserService,
         private readonly tagsService: TagsService,
-        private readonly configService: ConfigService
+
+        private readonly paginationProvider: PaginationProvider
     ) { }
 
     private logger = new Logger(PostsService.name);
@@ -38,13 +38,10 @@ export class PostsService {
         return posts;
     }
 
-    public async findAllPosts(query: GetPostsDTO) {
+    public async findAllPosts(query: GetPostsDTO): Promise<Paginated<Post>> {
         const page = query.page ?? 1;
         const limit = query.limit ?? 10;
-        const posts = await this.postsRepo.find({
-            take: limit,
-            skip: ((page - 1) * limit)
-        });
+        const posts = await this.paginationProvider.paginateQuery({ page, limit }, this.postsRepo)
         return posts;
     }
 

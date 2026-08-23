@@ -1,4 +1,4 @@
-import { IsArray, IsEnum, IsIn, IsInt, IsISO8601, IsJSON, IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl, Matches, MaxLength, MinLength, ValidateNested } from "class-validator";
+import { IsArray, IsDate, IsDateString, IsEnum, IsIn, IsInt, IsISO8601, IsJSON, IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl, Matches, MaxLength, MinLength, ValidateNested } from "class-validator";
 import { postType } from "./enums/postType.enum";
 import { postStatus } from "./enums/postStatus.enum";
 import { Type } from "class-transformer";
@@ -73,7 +73,7 @@ export class CreatePostDto {
     })
     featuredImageUrl?: string
 
-    @IsISO8601()
+    @IsDate()
     @IsOptional()
     @ApiPropertyOptional({
         description: "blog post published date",

@@ -1,4 +1,4 @@
-import { BadRequestException, forwardRef, Inject, Injectable, Logger, RequestTimeoutException, HttpException, HttpStatus } from "@nestjs/common";
+import { BadRequestException, forwardRef, Inject, Injectable, Logger, RequestTimeoutException, HttpException, HttpStatus, Query } from "@nestjs/common";
 import { AuthService } from "src/modules/auth/providers/auth.service";
 import { Repository } from "typeorm";
 import { User } from "../user.entity";
@@ -6,6 +6,9 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { CreateUserDto } from "src/dtos/users/users.dto";
 import { CreateManyUsers } from "./create-many-users";
 import { CreateManyUsersDto } from "../dtos/create-many-users.dto";
+import { PaginationQueryDto } from "src/modules/common/dtos/pagination-query.dto";
+import { Paginated } from "src/modules/common/pagination/inerfaces/paginated-interface";
+import { PaginationProvider } from "src/modules/common/pagination/providers/pagination-provider";
 
 /**
  * Class to connect Users table and perform business operations
@@ -26,6 +29,7 @@ export class UserService {
         private readonly usersRepository: Repository<User>,
 
         private readonly createManyUsersProvider: CreateManyUsers,
+        private readonly paginationProvider: PaginationProvider,
     ) { }
     /**
      * Initialize private logger object
@@ -40,18 +44,11 @@ export class UserService {
      */
 
 
-    public async findAllUsers(page?: number, limit?: number) {
-        throw new HttpException(
-            {
-                status: HttpStatus.NOT_IMPLEMENTED,
-                error: 'Method not implemented'
-            },
-            HttpStatus.NOT_IMPLEMENTED,
-            {
-                description: 'Method not implemented',
-                cause: new Error('Method not implemented')
-            }
-        );
+    public async findAllUsers(@Query() query: PaginationQueryDto): Promise<Paginated<User>> {
+        const page = query.page ?? 1;
+        const limit = query.limit ?? 10;
+        const users = await this.paginationProvider.paginateQuery({ page, limit }, this.usersRepository)
+        return users
     }
 
     /**

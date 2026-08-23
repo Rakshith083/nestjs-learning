@@ -10,7 +10,7 @@ export interface Paginated<T> {
         last: string,
         current: string,
         next: string,
-        previos: string
+        previous: string
     },
     data: T[]
 }
