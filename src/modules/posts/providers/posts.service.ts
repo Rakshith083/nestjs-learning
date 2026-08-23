@@ -8,6 +8,7 @@ import { MetaOptions } from 'src/modules/meta-options/meta-option.entity';
 import { TagsService } from 'src/modules/tags/providers/tags.service';
 import { PatchPostDto } from 'src/dtos/posts/patch-post-dto';
 import { ConfigService } from '@nestjs/config';
+import { GetPostsDTO } from '../dtos/get-posts.dto';
 
 
 @Injectable()
@@ -25,15 +26,25 @@ export class PostsService {
     ) { }
 
     private logger = new Logger(PostsService.name);
-    public async findAllPosts() {
+
+    public async findUserPosts(query: GetPostsDTO, userId: number) {
+        const page = query.page ?? 1;
+        const limit = query.limit ?? 10;
         const posts = await this.postsRepo.find({
-            relations: {
-                // metaOptions: true,
-                // author: true
-                // tags: true
-            }
+            where: { author: { id: userId } },
+            take: limit,
+            skip: ((page - 1) * limit)
         });
-        this.logger.log("DB_HOST", this.configService.get('DB_HOST'))
+        return posts;
+    }
+
+    public async findAllPosts(query: GetPostsDTO) {
+        const page = query.page ?? 1;
+        const limit = query.limit ?? 10;
+        const posts = await this.postsRepo.find({
+            take: limit,
+            skip: ((page - 1) * limit)
+        });
         return posts;
     }
 

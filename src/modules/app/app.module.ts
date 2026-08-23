@@ -13,6 +13,7 @@ import { PostsModule } from '../posts/posts.module';
 import { AuthModule } from '../auth/auth.module';
 import { TagsModule } from '../tags/tags.module';
 import { MetaOptionsModule } from '../meta-options/meta-options.module';
+import { PaginationModule } from '../common/pagination.module';
 
 const ENV = process.env.NODE_ENV;
 
@@ -44,6 +45,7 @@ const getBoolean = (configService: ConfigService, key: string): boolean => {
     PostsModule,
     AuthModule,
     TagsModule,
+    PaginationModule,
     MetaOptionsModule,
     ConfigModule.forRoot({
       isGlobal: true,

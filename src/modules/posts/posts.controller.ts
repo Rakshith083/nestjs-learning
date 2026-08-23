@@ -4,6 +4,7 @@ import { CreatePostDto } from "src/dtos/posts/post.dto";
 
 import { ApiOperation, ApiResponse } from "@nestjs/swagger";
 import { PatchPostDto } from "src/dtos/posts/patch-post-dto";
+import { GetPostsDTO } from "./dtos/get-posts.dto";
 
 @Controller('posts')
 export class PostController {
@@ -14,13 +15,14 @@ export class PostController {
     private logger = new Logger(PostController.name)
 
     @Get()
-    public async getPosts() {
-        return await this.postService.findAllPosts();
+    public async getPosts(@Query() query: GetPostsDTO) {
+        return await this.postService.findAllPosts(query);
     }
 
     @Get('/:userId')
-    public async getUserPosts(@Param('userId', ParseIntPipe) userId: number) {
-        // return await this.postService.findAllPosts(userId);
+    public async getUserPosts(@Param('userId', ParseIntPipe) userId: number, @Query() query: GetPostsDTO) {
+        console.log("query", query)
+        return await this.postService.findUserPosts(query,userId);
     }
 
     @Post()
@@ -42,7 +44,7 @@ export class PostController {
         status: 200,
         description: "200 response code on successfully updating"
     })
-    
+
     @Patch()
     public updatePOst(@Body() body: PatchPostDto) {
         return this.postService.updatePost(body)
@@ -50,7 +52,7 @@ export class PostController {
 
 
     @Delete()
-    public async deletePost(@Query('id', ParseIntPipe) id: number) { 
+    public async deletePost(@Query('id', ParseIntPipe) id: number) {
         return await this.postService.deletePost(id)
     }
 }
