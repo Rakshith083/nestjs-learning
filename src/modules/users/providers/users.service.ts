@@ -1,5 +1,4 @@
-import { BadRequestException, forwardRef, Inject, Injectable, Logger, RequestTimeoutException, HttpException, HttpStatus, Query } from "@nestjs/common";
-import { AuthService } from "src/modules/auth/providers/auth.service";
+import { BadRequestException, Injectable, Logger, RequestTimeoutException, Query } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { User } from "../user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -11,6 +10,7 @@ import { Paginated } from "src/modules/common/pagination/inerfaces/paginated-int
 import { PaginationProvider } from "src/modules/common/pagination/providers/pagination-provider";
 import { HashingProvider } from "src/modules/auth/providers/hashing-provider";
 import { CreateUserProvider } from "./create-user-provider";
+import { FindUserByEmail } from "./find-user-by-email";
 
 /**
  * Class to connect Users table and perform business operations
@@ -18,21 +18,14 @@ import { CreateUserProvider } from "./create-user-provider";
 @Injectable()
 export class UserService {
 
-    /**
-     * constructor class to inject authservice
-     * @param authService 
-     */
     constructor(
-        //Circular Dependency with Auth
-        @Inject(forwardRef(() => AuthService))
-        private readonly authService: AuthService,
-
         @InjectRepository(User)
         private readonly usersRepository: Repository<User>,
 
         private readonly createManyUsersProvider: CreateManyUsers,
         private readonly paginationProvider: PaginationProvider,
         private readonly createUserProvider: CreateUserProvider,
+        private readonly findUserByEmailProvider: FindUserByEmail,
     ) { }
     /**
      * Initialize private logger object
@@ -87,6 +80,10 @@ export class UserService {
 
     public async createUser(createUserDto: CreateUserDto) {
         return this.createUserProvider.createUser(createUserDto)
+    }
+
+    public async findUserByEmail(email: string): Promise<User> {
+        return this.findUserByEmailProvider.getUserByEmail(email);
     }
 
 }

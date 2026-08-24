@@ -1,20 +1,17 @@
-import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
-import { UserService } from 'src/modules/users/providers/users.service';
+import { Injectable, Logger } from '@nestjs/common';
+import { SignInDTO } from '../dtos/signin.dto';
+import { SigninProvider } from './signin-provider';
 
 @Injectable()
 export class AuthService {
 
     constructor(
-        //Circular Dependency with User
-        @Inject(forwardRef(() => UserService))
-        private readonly userService: UserService
+        private readonly signInProvider: SigninProvider
     ) { }
-    
+
     private logger = new Logger(AuthService.name);
-    public login(email: string, password: string) {
-        const users = this.userService.findAllUsers();
-        this.logger.log(users)
-        return "Sample Token"
+    public async signIn(body: SignInDTO) {
+        return await this.signInProvider.signIn(body)
     }
     public isAuthenticated() {
         return true;

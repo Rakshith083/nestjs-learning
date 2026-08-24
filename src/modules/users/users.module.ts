@@ -7,10 +7,11 @@ import { User } from './user.entity';
 import {  CreateManyUsers as CreateManyUsersProvider } from './providers/create-many-users';
 import { PaginationModule } from '../common/pagination.module';
 import { CreateUserProvider } from './providers/create-user-provider';
+import { FindUserByEmail } from './providers/find-user-by-email';
 
 @Module({
   controllers: [UsersController],
-  providers: [UserService, CreateManyUsersProvider, CreateUserProvider],
+  providers: [UserService, CreateManyUsersProvider, CreateUserProvider, FindUserByEmail],
   exports: [UserService],
   imports: [
     forwardRef(() => AuthModule),
