@@ -2,4 +2,4 @@ Create Modules
 npx nest g module  modules/common/pagination --flat --no-spec --dry-run
 
 Create Providers
-npx nest g pr modules/users/providers/create-many-users.ts --flat --no-spec --dry-run
+npx nest g pr modules/users/providers/create-many-users --flat --no-spec --dry-run

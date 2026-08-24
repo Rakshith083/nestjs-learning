@@ -9,6 +9,8 @@ import { CreateManyUsersDto } from "../dtos/create-many-users.dto";
 import { PaginationQueryDto } from "src/modules/common/dtos/pagination-query.dto";
 import { Paginated } from "src/modules/common/pagination/inerfaces/paginated-interface";
 import { PaginationProvider } from "src/modules/common/pagination/providers/pagination-provider";
+import { HashingProvider } from "src/modules/auth/providers/hashing-provider";
+import { CreateUserProvider } from "./create-user-provider";
 
 /**
  * Class to connect Users table and perform business operations
@@ -30,6 +32,7 @@ export class UserService {
 
         private readonly createManyUsersProvider: CreateManyUsers,
         private readonly paginationProvider: PaginationProvider,
+        private readonly createUserProvider: CreateUserProvider,
     ) { }
     /**
      * Initialize private logger object
@@ -83,39 +86,7 @@ export class UserService {
     }
 
     public async createUser(createUserDto: CreateUserDto) {
-        let user: User | null = null;
-        try {
-            user = await this.usersRepository.findOne({
-                where: { email: createUserDto.email }
-            });
-        }
-        catch (ex) {
-            this.logger.error("Error occurred while creating user", ex)
-            throw new RequestTimeoutException("Error occurred while creating user", {
-                description: "Error occurred while creating user",
-                cause: ex
-            });
-        }
-
-        if (user) {
-            throw new BadRequestException("User already exists", {
-                description: "User already exists",
-                cause: new Error("User already exists")
-            });
-        }
-        let newUser = this.usersRepository.create(createUserDto);
-
-        try {
-            newUser = await this.usersRepository.save(newUser);
-            return newUser
-        }
-        catch (ex) {
-            this.logger.error("Error occurred while saving user", ex)
-            throw new RequestTimeoutException("Unable to save user", {
-                description: "Error occurred while saving user",
-                cause: ex
-            });
-        }
+        return this.createUserProvider.createUser(createUserDto)
     }
 
 }
