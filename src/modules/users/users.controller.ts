@@ -22,6 +22,7 @@ import { CreateUserDto, GetUserDTO, PatchUserDto } from 'src/dtos/users/users.dt
 import { UserService } from './providers/users.service';
 import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { CreateManyUsersDto } from './dtos/create-many-users.dto';
+import { PaginationQueryDto } from '../common/dtos/pagination-query.dto';
 
 @Controller('users')
 export class UsersController {
@@ -54,10 +55,9 @@ export class UsersController {
         description: "Users fetched successfully"
     })
     public async getAllUsers(
-        @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-        @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number
+        @Query() query?: PaginationQueryDto,
     ) {
-        const users = await this.userService.findAllUsers(page, limit);
+        const users = await this.userService.findAllUsers(query);
         return users;
     }
 

@@ -44,9 +44,9 @@ export class UserService {
      */
 
 
-    public async findAllUsers(@Query() query: PaginationQueryDto): Promise<Paginated<User>> {
-        const page = query.page ?? 1;
-        const limit = query.limit ?? 10;
+    public async findAllUsers(@Query() query?: PaginationQueryDto): Promise<Paginated<User>> {
+        const page = query?.page ?? 1;
+        const limit = query?.limit ?? 10;
         const users = await this.paginationProvider.paginateQuery({ page, limit }, this.usersRepository)
         return users
     }
