@@ -3,3 +3,6 @@ npx nest g module  modules/common/pagination --flat --no-spec --dry-run
 
 Create Providers
 npx nest g pr modules/users/providers/create-many-users --flat --no-spec --dry-run
+
+Create Guards
+npx nest g guard modules/auth/guards/access-token --flat --no-spec --dry-run

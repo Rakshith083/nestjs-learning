@@ -11,7 +11,9 @@ export class SigninProvider {
     constructor(
         @Inject(forwardRef(() => UserService))
         private readonly userService: UserService,
+
         private readonly hashingProvider: HashingProvider,
+        
         private readonly jwtService: JwtService,
 
         @Inject(jwtConfig.KEY)
