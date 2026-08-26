@@ -14,6 +14,10 @@ import { AuthModule } from '../auth/auth.module';
 import { TagsModule } from '../tags/tags.module';
 import { MetaOptionsModule } from '../meta-options/meta-options.module';
 import { PaginationModule } from '../common/pagination.module';
+import { JwtModule } from '@nestjs/jwt';
+import jwtConfig from '../auth/config/jwt-config';
+import { APP_GUARD } from '@nestjs/core';
+import { AccessTokenGuard } from '../auth/guards/access-token.guard';
 
 const ENV = process.env.NODE_ENV;
 
@@ -79,7 +83,7 @@ const getBoolean = (configService: ConfigService, key: string): boolean => {
                 if (fs.existsSync(caPath)) {
                   return { ca: fs.readFileSync(caPath, 'utf8') };
                 }
-              } catch(e) {
+              } catch (e) {
                 console.error(e)
                 // ignore and fall back
               }
@@ -89,9 +93,13 @@ const getBoolean = (configService: ConfigService, key: string): boolean => {
         };
       },
     }),
-
+    ConfigModule.forFeature(jwtConfig),
+    JwtModule.registerAsync(jwtConfig.asProvider()),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, {
+    provide: APP_GUARD,
+    useClass: AccessTokenGuard
+  }],
 })
 export class AppModule { }

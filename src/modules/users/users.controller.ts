@@ -14,7 +14,8 @@ import {
     ValidationPipe,
     Headers,
     Ip,
-    Logger
+    Logger,
+    UseGuards
 } from '@nestjs/common';
 // import type { CreateUser } from 'src/types/users/users-crud';
 import { Request } from 'express';
@@ -23,6 +24,7 @@ import { UserService } from './providers/users.service';
 import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { CreateManyUsersDto } from './dtos/create-many-users.dto';
 import { PaginationQueryDto } from '../common/dtos/pagination-query.dto';
+import { AccessTokenGuard } from '../auth/guards/access-token.guard';
 
 @Controller('users')
 export class UsersController {
@@ -73,6 +75,7 @@ export class UsersController {
         return this.userService.createUser(body)
     }
 
+    @UseGuards(AccessTokenGuard)
     @Post('createBulk')
     public createBulkUsers(
         @Body() body: CreateManyUsersDto
