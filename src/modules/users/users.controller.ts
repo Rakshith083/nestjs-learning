@@ -75,7 +75,6 @@ export class UsersController {
         return this.userService.createUser(body)
     }
 
-    @UseGuards(AccessTokenGuard)
     @Post('createBulk')
     public createBulkUsers(
         @Body() body: CreateManyUsersDto

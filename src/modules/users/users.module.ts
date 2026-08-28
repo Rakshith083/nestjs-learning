@@ -21,16 +21,12 @@ import { AccessTokenGuard } from '../auth/guards/access-token.guard';
     CreateManyUsersProvider,
     CreateUserProvider,
     FindUserByEmail,
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: AccessTokenGuard
-    // }
   ],
   exports: [UserService],
   imports: [
     forwardRef(() => AuthModule),
     TypeOrmModule.forFeature([User]),
-    PaginationModule
+    PaginationModule,
     // ConfigModule.forFeature(jwtConfig),
     // JwtModule.registerAsync(jwtConfig.asProvider())
   ]

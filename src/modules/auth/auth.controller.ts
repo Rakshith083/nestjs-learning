@@ -1,7 +1,9 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, SetMetadata } from '@nestjs/common';
 import { SignInDTO } from './dtos/signin.dto';
 import { AuthService } from './providers/auth.service';
 import { ApiOperation } from '@nestjs/swagger';
+import { Auth } from './decorators/auth.decorator';
+import { AuthType } from './enums/auth-type.enum';
 
 @Controller('auth')
 export class AuthController {
@@ -10,6 +12,7 @@ export class AuthController {
     ) { }
 
     @Post('signIn')
+    @Auth(AuthType.NONE)
     @HttpCode(HttpStatus.OK)
     @ApiOperation({
         description: "API for signIn"
