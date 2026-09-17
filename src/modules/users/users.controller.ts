@@ -25,6 +25,8 @@ import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { CreateManyUsersDto } from './dtos/create-many-users.dto';
 import { PaginationQueryDto } from '../common/dtos/pagination-query.dto';
 import { AccessTokenGuard } from '../auth/guards/access-token.guard';
+import { Auth } from '../auth/decorators/auth.decorator';
+import { AuthType } from '../auth/enums/auth-type.enum';
 
 @Controller('users')
 export class UsersController {
@@ -76,6 +78,7 @@ export class UsersController {
     }
 
     @Post('createBulk')
+    @Auth(AuthType.BEARER)
     public createBulkUsers(
         @Body() body: CreateManyUsersDto
     ) {

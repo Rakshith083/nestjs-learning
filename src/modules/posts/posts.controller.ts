@@ -5,6 +5,8 @@ import { CreatePostDto } from "src/dtos/posts/post.dto";
 import { ApiOperation, ApiResponse } from "@nestjs/swagger";
 import { PatchPostDto } from "src/dtos/posts/patch-post-dto";
 import { GetPostsDTO } from "./dtos/get-posts.dto";
+import { ActiveUser } from "../auth/decorators/active-user.decorator";
+import type { ActiveUserData } from "../auth/interfaces/active-user-data.interface";
 
 @Controller('posts')
 export class PostController {
@@ -22,7 +24,7 @@ export class PostController {
     @Get('/:userId')
     public async getUserPosts(@Param('userId', ParseIntPipe) userId: number, @Query() query: GetPostsDTO) {
         console.log("query", query)
-        return await this.postService.findUserPosts(query,userId);
+        return await this.postService.findUserPosts(query, userId);
     }
 
     @Post()
@@ -33,8 +35,8 @@ export class PostController {
         status: 201,
         description: "You get 201 status code if the post created successfully"
     })
-    public createPost(@Body() body: CreatePostDto) {
-        return this.postService.createPost(body);
+    public createPost( @ActiveUser('userId') userId: number, @Body() body: CreatePostDto) {
+        return this.postService.createPost(userId, body);
     }
 
     @ApiOperation({

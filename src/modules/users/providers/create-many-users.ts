@@ -38,6 +38,7 @@ export class CreateManyUsers {
             await queryRunner.commitTransaction();
         }
         catch (ex:any) {
+            console.log(ex)
             await queryRunner.rollbackTransaction();
             throw new ConflictException('Could not complete transaction', {
                 cause: new Error('Failed to create users'),

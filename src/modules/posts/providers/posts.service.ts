@@ -45,8 +45,8 @@ export class PostsService {
         return posts;
     }
 
-    public async createPost(body: CreatePostDto) {
-        const author = await this.userService.findUserById(body.authorId);
+    public async createPost(userId: number, body: CreatePostDto) {
+        const author = await this.userService.findUserById(userId);
         if (!author) {
             throw new Error('Author not found')
         }
