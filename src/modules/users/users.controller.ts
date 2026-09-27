@@ -15,7 +15,9 @@ import {
     Headers,
     Ip,
     Logger,
-    UseGuards
+    UseGuards,
+    UseInterceptors,
+    ClassSerializerInterceptor
 } from '@nestjs/common';
 // import type { CreateUser } from 'src/types/users/users-crud';
 import { Request } from 'express';
@@ -71,6 +73,7 @@ export class UsersController {
     }
 
     @Post()
+    @UseInterceptors(ClassSerializerInterceptor)
     public createUser(
         @Body() body: CreateUserDto
     ) {

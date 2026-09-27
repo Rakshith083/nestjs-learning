@@ -16,9 +16,10 @@ import { MetaOptionsModule } from '../meta-options/meta-options.module';
 import { PaginationModule } from '../common/pagination.module';
 import { JwtModule } from '@nestjs/jwt';
 import jwtConfig from '../auth/config/jwt-config';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AccessTokenGuard } from '../auth/guards/access-token.guard';
 import { AuthenticationGuard } from '../auth/guards/authentication/authentication.guard';
+import { DataResponseInterceptor } from '../common/interceptors/data-response.interceptor';
 
 const ENV = process.env.NODE_ENV;
 
@@ -98,10 +99,15 @@ const getBoolean = (configService: ConfigService, key: string): boolean => {
     JwtModule.registerAsync(jwtConfig.asProvider()),
   ],
   controllers: [AppController],
-  providers: [AppService, {
-    provide: APP_GUARD,
-    useClass: AuthenticationGuard
-  },
+  providers: [AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthenticationGuard
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: DataResponseInterceptor
+    },
     AccessTokenGuard
   ],
 })

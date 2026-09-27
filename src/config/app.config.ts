@@ -11,5 +11,6 @@ export const appConfig = () => ({
         is_db_ssl: process.env.IS_SSL_DB === 'true',
         db_sync: process.env.DB_SYNC === 'true',
         auto_load_entities: process.env.AUTO_LOAD_ENTITIES === 'true',
-    }
+    },
+    apiVersion: process.env.API_VERSION,
 })
