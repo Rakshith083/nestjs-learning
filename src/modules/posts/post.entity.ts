@@ -1,7 +1,9 @@
 import { postStatus } from "src/dtos/posts/enums/postStatus.enum";
 import { postType } from "src/dtos/posts/enums/postType.enum";
-import { CreatePostMetaOptionsDto } from "src/dtos/posts/post.dto";
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { MetaOptions } from "../meta-options/meta-option.entity";
+import { User } from "../users/user.entity";
+import { Tag } from "../tags/tag.entity";
 
 
 @Entity()
@@ -56,7 +58,7 @@ export class Post {
     @Column({
         nullable: true,
         type: 'varchar',
-        length:1024
+        length: 1024
 
     })
     featuredImageUrl?: string;
@@ -68,7 +70,30 @@ export class Post {
     })
     publishedOn?: Date;
 
+    @OneToOne(
+        () => MetaOptions,
+        (metaOptions) => metaOptions.post,
+        {
+            cascade: true,
+            eager: true
+        })
+    metaOptions?: MetaOptions;
 
-    tags?: string[];
-    metaOptions?: CreatePostMetaOptionsDto[]
+    @ManyToOne(
+        () => User,
+        (author) => author.posts,
+        {
+            onDelete: 'CASCADE',
+            eager: true
+        })
+    author: User
+
+    @ManyToMany(
+        () => Tag,
+        (tag)=>tag.posts,
+        {
+            eager: true
+        })
+    @JoinTable()
+    tags?: Tag[];
 }

@@ -25,7 +25,8 @@
   },
   "include": [
     "src/**/*.ts",
-    "test/**/*.ts"
+    "test/**/*.ts",
+    "src/config/app.config.ts"
   ],
   "exclude": [
     "node_modules",

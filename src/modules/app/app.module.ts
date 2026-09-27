@@ -1,40 +1,114 @@
 import { Module } from '@nestjs/common';
+import * as fs from 'fs';
+import * as path from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
-//custom modules
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+
+import { appConfig } from '../../config/app.config';
 import { UsersModule } from 'src/modules/users/users.module';
 import { PostsModule } from '../posts/posts.module';
 import { AuthModule } from '../auth/auth.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
-// entities will be auto-scanned by glob pattern below
+import { TagsModule } from '../tags/tags.module';
+import { MetaOptionsModule } from '../meta-options/meta-options.module';
+import { PaginationModule } from '../common/pagination.module';
+import { JwtModule } from '@nestjs/jwt';
+import jwtConfig from '../auth/config/jwt-config';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { AccessTokenGuard } from '../auth/guards/access-token.guard';
+import { AuthenticationGuard } from '../auth/guards/authentication/authentication.guard';
+import { DataResponseInterceptor } from '../common/interceptors/data-response.interceptor';
 
+const ENV = process.env.NODE_ENV;
+
+const getBoolean = (configService: ConfigService, key: string): boolean => {
+  const value = configService.get<string | boolean | undefined>(key);
+
+  if (typeof value === 'boolean') {
+    return value;
+  }
+
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase();
+
+    if (['true', '1', 'yes', 'on'].includes(normalized)) {
+      return true;
+    }
+
+    if (['false', '0', 'no', 'off', ''].includes(normalized)) {
+      return false;
+    }
+  }
+
+  return false;
+};
 
 @Module({
   imports: [
     UsersModule,
     PostsModule,
     AuthModule,
+    TagsModule,
+    PaginationModule,
+    MetaOptionsModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      // envFilePath:[
+      //   '.env.development'
+      // ]
+      envFilePath: !ENV ? '.env' : `.env.${ENV}`.toLocaleLowerCase(),
+      load: [appConfig]
+    }),
     TypeOrmModule.forRootAsync({
-      imports: [],
-      inject: [],
-      useFactory: (() => ({
-        type: "postgres",
-        // scan for any files named *.entity.ts or *.entity.js under src/modules
-        entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-        synchronize: true,
-        poolSize: 20,
-        port: 5432,
-        username: "postgres",
-        password: "postgres",
-        host: "localhost",
-        database: "nestjs-blog",
-        // schema: "custom"
-      }))
-    })
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService): TypeOrmModuleOptions => {
+        const isSslEnabled = getBoolean(configService, 'IS_SSL_DB');
+        const rejectUnauthorized = getBoolean(configService, 'REJECT_UNAUTHORIZED');
 
+        return {
+          type: (configService.get<string>('DB_TYPE') ?? 'postgres') as 'postgres',
+          autoLoadEntities: getBoolean(configService, 'AUTO_LOAD_ENTITIES'),
+          synchronize: getBoolean(configService, 'DB_SYNC'),
+          poolSize: configService.get<number>('POOL_SIZE') ?? 20,
+          port: configService.get<number>('DB_PORT'),
+          username: configService.get<string>('DB_USERNAME'),
+          password: configService.get<string>('DB_PASSWORD'),
+          host: configService.get<string>('DB_HOST'),
+          database: configService.get<string>('DB_NAME'),
+          ssl: isSslEnabled
+            ? (() => {
+              try {
+                const caPath = path.join(__dirname, '..', '..', '..', 'certificates', 'db-ca.pem');
+                if (fs.existsSync(caPath)) {
+                  return { ca: fs.readFileSync(caPath, 'utf8') };
+                }
+              } catch (e) {
+                console.error(e)
+                // ignore and fall back
+              }
+              return { rejectUnauthorized } as any;
+            })()
+            : false,
+        };
+      },
+    }),
+    ConfigModule.forFeature(jwtConfig),
+    JwtModule.registerAsync(jwtConfig.asProvider()),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthenticationGuard
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: DataResponseInterceptor
+    },
+    AccessTokenGuard
+  ],
 })
 export class AppModule { }

@@ -1,7 +1,12 @@
-import { Body, Controller, Get, Logger, Param, ParseIntPipe, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Logger, Param, ParseIntPipe, Patch, Post, Query } from "@nestjs/common";
 import { PostsService } from "./providers/posts.service";
-import { CreatePostDto, PatchPostDto } from "src/dtos/posts/post.dto";
+import { CreatePostDto } from "src/dtos/posts/post.dto";
+
 import { ApiOperation, ApiResponse } from "@nestjs/swagger";
+import { PatchPostDto } from "src/dtos/posts/patch-post-dto";
+import { GetPostsDTO } from "./dtos/get-posts.dto";
+import { ActiveUser } from "../auth/decorators/active-user.decorator";
+import type { ActiveUserData } from "../auth/interfaces/active-user-data.interface";
 
 @Controller('posts')
 export class PostController {
@@ -12,13 +17,14 @@ export class PostController {
     private logger = new Logger(PostController.name)
 
     @Get()
-    public getPosts() {
-
+    public async getPosts(@Query() query: GetPostsDTO) {
+        return await this.postService.findAllPosts(query);
     }
 
     @Get('/:userId')
-    public getUserPosts(@Param('userId', ParseIntPipe) userId: number) {
-        return this.postService.findUserPosts(userId);
+    public async getUserPosts(@Param('userId', ParseIntPipe) userId: number, @Query() query: GetPostsDTO) {
+        console.log("query", query)
+        return await this.postService.findUserPosts(query, userId);
     }
 
     @Post()
@@ -29,9 +35,8 @@ export class PostController {
         status: 201,
         description: "You get 201 status code if the post created successfully"
     })
-    public createPost(@Body() body: CreatePostDto): any {
-        this.logger.log(body);
-        return "Create Post"
+    public createPost( @ActiveUser('userId') userId: number, @Body() body: CreatePostDto) {
+        return this.postService.createPost(userId, body);
     }
 
     @ApiOperation({
@@ -41,9 +46,15 @@ export class PostController {
         status: 200,
         description: "200 response code on successfully updating"
     })
+
     @Patch()
     public updatePOst(@Body() body: PatchPostDto) {
-        this.logger.log(body);
-        return "Post updated"
+        return this.postService.updatePost(body)
+    }
+
+
+    @Delete()
+    public async deletePost(@Query('id', ParseIntPipe) id: number) {
+        return await this.postService.deletePost(id)
     }
 }

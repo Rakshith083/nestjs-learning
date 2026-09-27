@@ -14,13 +14,21 @@ import {
     ValidationPipe,
     Headers,
     Ip,
-    Logger
+    Logger,
+    UseGuards,
+    UseInterceptors,
+    ClassSerializerInterceptor
 } from '@nestjs/common';
 // import type { CreateUser } from 'src/types/users/users-crud';
 import { Request } from 'express';
 import { CreateUserDto, GetUserDTO, PatchUserDto } from 'src/dtos/users/users.dto';
 import { UserService } from './providers/users.service';
 import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import { CreateManyUsersDto } from './dtos/create-many-users.dto';
+import { PaginationQueryDto } from '../common/dtos/pagination-query.dto';
+import { AccessTokenGuard } from '../auth/guards/access-token.guard';
+import { Auth } from '../auth/decorators/auth.decorator';
+import { AuthType } from '../auth/enums/auth-type.enum';
 
 @Controller('users')
 export class UsersController {
@@ -53,10 +61,9 @@ export class UsersController {
         description: "Users fetched successfully"
     })
     public async getAllUsers(
-        @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-        @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number
+        @Query() query?: PaginationQueryDto,
     ) {
-        const users = await this.userService.findAllUsers(page, limit);
+        const users = await this.userService.findAllUsers(query);
         return users;
     }
 
@@ -66,10 +73,19 @@ export class UsersController {
     }
 
     @Post()
+    @UseInterceptors(ClassSerializerInterceptor)
     public createUser(
         @Body() body: CreateUserDto
     ) {
         return this.userService.createUser(body)
+    }
+
+    @Post('createBulk')
+    @Auth(AuthType.BEARER)
+    public createBulkUsers(
+        @Body() body: CreateManyUsersDto
+    ) {
+        return this.userService.createMany(body)
     }
 
     @Put(':id')

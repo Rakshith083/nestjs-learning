@@ -1,20 +1,12 @@
-import { IsArray, IsEnum, IsISO8601, IsJSON, IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl, Matches, MaxLength, MinLength, ValidateNested } from "class-validator";
+import { IsArray, IsDate, IsDateString, IsEnum, IsIn, IsInt, IsISO8601, IsJSON, IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl, Matches, MaxLength, MinLength, ValidateNested } from "class-validator";
 import { postType } from "./enums/postType.enum";
 import { postStatus } from "./enums/postStatus.enum";
 import { Type } from "class-transformer";
-import { ApiProperty, ApiPropertyOptional, PartialType } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional, } from "@nestjs/swagger";
+import { CreatePostMetaOptionsDto } from "../../modules/meta-options/dtos/create-post-meta-options.dto";
 // import { PartialType } from "@nestjs/mapped-types";
 
 
-export class CreatePostMetaOptionsDto {
-    @IsString()
-    @MinLength(3)
-    @IsNotEmpty()
-    key!: string
-
-    @IsNotEmpty()
-    value!: any
-}
 
 
 export class CreatePostDto {
@@ -81,7 +73,7 @@ export class CreatePostDto {
     })
     featuredImageUrl?: string
 
-    @IsISO8601()
+    @IsDate()
     @IsOptional()
     @ApiPropertyOptional({
         description: "blog post published date",
@@ -91,48 +83,42 @@ export class CreatePostDto {
 
     @IsOptional()
     @IsArray()
-    @IsString({ each: true })
-    @MinLength(3, { each: true })
+    @IsInt({ each: true })
     @ApiPropertyOptional({
-        description: "Array of tags passed as string values",
-        example: ["nestJs", "tsc"]
+        description: "Array of ids of tags",
+        example: [1,2]
     })
-    tags?: string[]
+    tags?: number[]
 
     @ApiPropertyOptional(
         {
-            type: 'array',
+            type: CreatePostMetaOptionsDto,
             required: false,
             items: {
                 type: 'object',
                 properties: {
-                    key: {
-                        type: 'string',
-                        description: "The key can be string identifier for meta options",
-                        example: "sideBarEnabled"
-                    },
-                    value: {
-                        type: 'any',
-                        description: "Any value that you want to save to DB",
-                        example: true
+                    metaValue: {
+                        type: 'object',
+                        description: "The metaValue is a json string",
+                        example: "{\"sidebarEnabled\":true,\"footerActive\":true}"
                     }
                 }
             }
         }
     )
     @IsOptional()
-    @IsArray()
+    // @IsArray()
     @ValidateNested({ each: true })
     @Type(() => CreatePostMetaOptionsDto)
-    metaOptions?: CreatePostMetaOptionsDto[]
+    metaOptions?: CreatePostMetaOptionsDto
 
-}
-
-
-export class PatchPostDto extends PartialType(CreatePostDto) {
-
-    @IsNumber()
+    @IsInt()
     @IsNotEmpty()
-    @ApiProperty({ description: "Id of the post that needs update" })
-    id!: number
+    @ApiProperty({
+        type: 'integer',
+        required: true,
+        example: "2"
+    })
+    authorId: number
 }
+
