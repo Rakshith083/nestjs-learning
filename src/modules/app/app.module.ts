@@ -20,6 +20,7 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AccessTokenGuard } from '../auth/guards/access-token.guard';
 import { AuthenticationGuard } from '../auth/guards/authentication/authentication.guard';
 import { DataResponseInterceptor } from '../common/interceptors/data-response.interceptor';
+import { UploadsModule } from '../uploads/uploads.module';
 
 const ENV = process.env.NODE_ENV;
 
@@ -53,6 +54,7 @@ const getBoolean = (configService: ConfigService, key: string): boolean => {
     TagsModule,
     PaginationModule,
     MetaOptionsModule,
+    UploadsModule,
     ConfigModule.forRoot({
       isGlobal: true,
       // envFilePath:[
