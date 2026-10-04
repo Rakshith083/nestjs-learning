@@ -4,6 +4,7 @@ import { User } from '../user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { HashingProvider } from 'src/modules/auth/providers/hashing-provider';
+import { EmailService } from 'src/modules/notification/provider/email.service';
 
 @Injectable()
 export class CreateUserProvider {
@@ -12,7 +13,9 @@ export class CreateUserProvider {
         private readonly usersRepository: Repository<User>,
 
         @Inject(forwardRef(() => HashingProvider))
-        private readonly hashingProvider: HashingProvider
+        private readonly hashingProvider: HashingProvider,
+
+        private readonly emailerService: EmailService
     ) { }
 
     private logger = new Logger(CreateUserProvider.name);
@@ -45,7 +48,6 @@ export class CreateUserProvider {
 
         try {
             newUser = await this.usersRepository.save(newUser);
-            return newUser
         }
         catch (ex) {
             this.logger.error("Error occurred while saving user", ex)
@@ -54,5 +56,22 @@ export class CreateUserProvider {
                 cause: ex
             });
         }
+
+        try {
+            await this.emailerService.sendEmail(
+                newUser.email,
+                "Welcome to MyApp",
+                "welcome",
+                {
+                    name: newUser.name,
+                    email: newUser.email,
+                    loginUrl: `https://myapp.com/login`
+                });
+        }
+        catch (ex) {
+            this.logger.error("Error occurred while sending welcome email", ex)
+        }
+
+        return newUser;
     }
 }

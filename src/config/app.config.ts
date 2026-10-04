@@ -12,5 +12,12 @@ export const appConfig = () => ({
         db_sync: process.env.DB_SYNC === 'true',
         auto_load_entities: process.env.AUTO_LOAD_ENTITIES === 'true',
     },
+    smtp: {
+        mail_host: process.env.MAIL_HOST || 'smtp.example.com',
+        mail_port: parseInt(process.env.MAIL_PORT || '587', 10),
+        mail_user: process.env.MAIL_USER || '',
+        mail_password: process.env.MAIL_PASSWORD || '',
+        mail_from: process.env.MAIL_FROM || 'noreply@myapp.com'
+    },
     apiVersion: process.env.API_VERSION,
 })
