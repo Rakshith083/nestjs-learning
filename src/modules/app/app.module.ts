@@ -21,6 +21,7 @@ import { AccessTokenGuard } from '../auth/guards/access-token.guard';
 import { AuthenticationGuard } from '../auth/guards/authentication/authentication.guard';
 import { DataResponseInterceptor } from '../common/interceptors/data-response.interceptor';
 import { UploadsModule } from '../uploads/uploads.module';
+import { NotificationModule } from '../notification/notification.module';
 
 const ENV = process.env.NODE_ENV;
 
@@ -55,6 +56,7 @@ const getBoolean = (configService: ConfigService, key: string): boolean => {
     PaginationModule,
     MetaOptionsModule,
     UploadsModule,
+    NotificationModule,
     ConfigModule.forRoot({
       isGlobal: true,
       // envFilePath:[

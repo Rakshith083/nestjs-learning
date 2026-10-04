@@ -1,7 +1,7 @@
 import { ClassSerializerInterceptor, Controller, Get, NotFoundException, Param, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiHeaders, ApiOperation } from '@nestjs/swagger';
-import type { Express, Response } from 'express';
+import type { Response } from 'express';
 import { UploadsService } from './providers/uploads.service';
 
 @Controller('uploads')
